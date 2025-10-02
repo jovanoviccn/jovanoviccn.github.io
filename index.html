@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+  <meta charset="UTF-8">
+  <title>Кладограм биљака</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      background: #0a1a2f;
+      color: #d6f5d6;
+      overflow: hidden;
+    }
+    svg {
+      width: 100vw;
+      height: 100vh;
+    }
+    .node circle {
+      fill: #0f2f1f;
+      stroke: #34d399;
+      stroke-width: 2;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .node circle:hover {
+      fill: #34d399;
+    }
+    .label {
+      font-size: 14px;
+      fill: #d6f5d6;
+      pointer-events: none;
+    }
+    .info-box {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 250px;
+      padding: 10px;
+      background: rgba(20,40,60,0.9);
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+      display: none;
+    }
+    .info-box img {
+      max-width: 100%;
+      border-radius: 8px;
+      margin-bottom: 8px;
+    }
+    .info-box h3 {
+      margin: 5px 0;
+      color: #34d399;
+    }
+  </style>
+</head>
+<body>
+
+<svg id="kladogram"></svg>
+
+<div class="info-box" id="infoBox">
+  <img id="infoImg" src="" alt="">
+  <h3 id="infoTitle"></h3>
+  <p id="infoDesc"></p>
+</div>
+
+<script>
+const nodes = [
+  {id:1, name:"Копнене", x:100, y:300, img:"slike/kopnene.jpg", desc:"Заједничке особине копнених биљака."},
+  {id:2, name:"Маховине", x:300, y:150, img:"slike/mahovine.jpg", desc:"Примитивне биљке без васкуларног ткива."},
+  {id:3, name:"Васкуларне", x:300, y:450, img:"slike/vaskularne.jpg", desc:"Поседују ксилем и флоем."},
+  {id:4, name:"Пречице", x:500, y:350, img:"slike/precice.jpg", desc:"Примитивне васкуларне биљке."},
+  {id:5, name:"Папратнице", x:500, y:500, img:"slike/papratnice.jpg", desc:"Биљке које се размножавају спорама."},
+  {id:6, name:"Биљке са семеном", x:500, y:650, img:"slike/semenke.jpg", desc:"Развијају семе и полен."},
+  {id:7, name:"Голосеменице", x:700, y:600, img:"slike/golosemenice.jpg", desc:"Семе није у плоду."},
+  {id:8, name:"Скривеносеменице", x:700, y:700, img:"slike/skrivenosemenice.jpg", desc:"Семе је у плоду."}
+];
+
+const links = [
+  {source:1, target:2},
+  {source:1, target:3},
+  {source:3, target:4},
+  {source:3, target:5},
+  {source:3, target:6},
+  {source:6, target:7},
+  {source:6, target:8}
+];
+
+const svg = document.getElementById("kladogram");
+
+// crtaj linkove
+links.forEach(link=>{
+  const s = nodes.find(n=>n.id===link.source);
+  const t = nodes.find(n=>n.id===link.target);
+  const line = document.createElementNS("http://www.w3.org/2000/svg","line");
+  line.setAttribute("x1", s.x);
+  line.setAttribute("y1", s.y);
+  line.setAttribute("x2", t.x);
+  line.setAttribute("y2", t.y);
+  line.setAttribute("stroke", "#34d399");
+  line.setAttribute("stroke-width", "2");
+  svg.appendChild(line);
+});
+
+// crtaj чворове
+nodes.forEach(node=>{
+  const g = document.createElementNS("http://www.w3.org/2000/svg","g");
+  g.setAttribute("class","node");
+
+  const circle = document.createElementNS("http://www.w3.org/2000/svg","circle");
+  circle.setAttribute("cx", node.x);
+  circle.setAttribute("cy", node.y);
+  circle.setAttribute("r", 20);
+
+  const text = document.createElementNS("http://www.w3.org/2000/svg","text");
+  text.setAttribute("x", node.x+30);
+  text.setAttribute("y", node.y+5);
+  text.setAttribute("class","label");
+  text.textContent = node.name;
+
+  g.appendChild(circle);
+  g.appendChild(text);
+  svg.appendChild(g);
+
+  g.addEventListener("click", ()=>{
+    document.getElementById("infoBox").style.display = "block";
+    document.getElementById("infoImg").src = node.img;
+    document.getElementById("infoTitle").textContent = node.name;
+    document.getElementById("infoDesc").textContent = node.desc;
+  });
+});
+</script>
+
+</body>
+</html>
